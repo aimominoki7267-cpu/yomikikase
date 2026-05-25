@@ -340,7 +340,7 @@ function render(list) {
           ${b.author ? `<div class="book-author">${b.author}</div>` : ''}
           ${b.kanso ? `
             <div class="kanso" id="k${gi}_${bi}">${b.kanso}</div>
-            <button class="more-btn" onclick="toggle('${gi}_${bi}')">もっと見る</button>
+            <button class="more-btn" id="btn${gi}_${bi}" onclick="toggle('${gi}_${bi}')" style="display:none">もっと見る</button>
           ` : ''}
         </div>
       </div>
@@ -359,6 +359,14 @@ function render(list) {
       </div>
     `;
   }).join('');
+  setTimeout(checkClamp, 50);
+}
+
+function checkClamp() {
+  document.querySelectorAll(".kanso").forEach(el => {
+    const btn = el.nextElementSibling;
+    if (btn && el.scrollHeight > el.clientHeight + 2) btn.style.display = "inline";
+  });
 }
 
 function toggle(id) {
