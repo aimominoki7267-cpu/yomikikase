@@ -178,10 +178,13 @@
       <select id="classSelect" onchange="filter()">
         <option value="">すべてのクラス</option>
       </select>
-      <select id="periodSelect" onchange="filter()">
+      <select id="periodSelect" onchange="onPeriodChange()">
         <option value="">すべての期間</option>
         <option value="2025">2025年度</option>
         <option value="2026">2026年度</option>
+      </select>
+      <select id="monthSelect" onchange="filter()" style="display:none">
+        <option value="">すべての月</option>
       </select>
     </div>
     <div class="search-wrap">
@@ -310,11 +313,13 @@ async function loadData() {
 function filter() {
   const cls = document.getElementById('classSelect').value;
   const period = document.getElementById('periodSelect').value;
+  const month = document.getElementById('monthSelect').value;
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
 
   const filtered = allGroups.filter(g => {
     if (cls && g.classKey !== cls) return false;
     if (period && !g.date.startsWith(period)) return false;
+    if (month && !g.date.startsWith(month)) return false;
     if (q) {
       const haystack = g.books.map(b=>b.title+' '+b.author).join(' ') + ' ' + g.person;
       if (!haystack.toLowerCase().includes(q)) return false;
@@ -360,6 +365,39 @@ function render(list) {
     `;
   }).join('');
   setTimeout(checkClamp, 50);
+}
+
+function onPeriodChange() {
+  const period = document.getElementById('periodSelect').value;
+  const monthSel = document.getElementById('monthSelect');
+  monthSel.innerHTML = '<option value="">すべての月</option>';
+
+  if (period) {
+    // その年度の月を抽出（4月〜翌3月）
+    const startYear = parseInt(period);
+    const months = [];
+    for (let m = 4; m <= 12; m++) months.push({ year: startYear, month: m });
+    for (let m = 1; m <= 3; m++) months.push({ year: startYear+1, month: m });
+
+    const existing = new Set(allGroups.map(g => {
+      const match = g.date.match(/(\d{4})年(\d{1,2})月/);
+      return match ? `${match[1]}年${match[2]}月` : null;
+    }).filter(Boolean));
+
+    months.forEach(({ year, month }) => {
+      const key = `${year}年${month}月`;
+      if (existing.has(key)) {
+        const o = document.createElement('option');
+        o.value = key;
+        o.textContent = `${month}月`;
+        monthSel.appendChild(o);
+      }
+    });
+    monthSel.style.display = 'block';
+  } else {
+    monthSel.style.display = 'none';
+  }
+  filter();
 }
 
 function checkClamp() {
