@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>楠小 読み聞かせ記録</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #f7f5f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+
+  /* ヘッダー */
+  .app-header {
+    background: #4a7a5a;
+    padding: 18px 20px 14px;
+  }
+  .app-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .app-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.88);
+  }
+
+  /* 自動連携バー */
+  .sync-bar {
+    background: #3d6b4d;
+    padding: 6px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .sync-left {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sync-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #7dd4a0;
+    flex-shrink: 0;
+  }
+  .sync-right {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* 本体 */
+  .body {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px 14px 40px;
+  }
+
+  /* 検索エリア */
+  .filter-area {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    border: 1px solid #e8e4db;
+  }
+  .filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+  .select-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  select {
+    flex: 1;
+    min-width: 130px;
+    background: #f7f5f0;
+    border: 1px solid #d8d4cc;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: #1a1a1a;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    cursor: pointer;
+  }
+  input[type="text"] {
+    width: 100%;
+    background: #f7f5f0;
+    border: 1px solid #d8d4cc;
+    border-radius: 8px;
+    padding: 8px 12px 8px 36px;
+    font-size: 14px;
+    color: #1a1a1a;
+    position: relative;
+  }
+  .search-wrap {
+    position: relative;
+  }
+  .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  /* 件数 */
+  .count-label {
+    font-size: 13px;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+  }
+
+  /* カード */
+  .book-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .book-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #e8e4db;
+  }
+  .book-card.is-new {
+    border-color: #b8d9c4;
+    border-width: 1.5px;
+  }
+  .card-top {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .num-badge {
+    background: #e6f0e8;
+    color: #1a1a1a;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .book-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.4;
+  }
+  .new-badge {
+    display: inline-block;
+    font-size: 10px;
+    background: #d4eddc;
+    color: #1a1a1a;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .book-author {
+    font-size: 13px;
+    color: #1a1a1a;
+    margin-top: 3px;
+  }
+  .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .tag {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: #1a1a1a;
+  }
+  .tag-date   { background: #f5f4f0; }
+  .tag-class  { background: #e6f0e8; }
+  .tag-person { background: #eef2fb; }
+
+  /* 感想 */
+  .kanso {
+    font-size: 13px;
+    color: #1a1a1a;
+    line-height: 1.7;
+    margin-top: 10px;
+    padding-left: 10px;
+    border-left: 2px solid #ddd;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .kanso.open {
+    -webkit-line-clamp: unset;
+  }
+  .more-btn {
+    font-size: 12px;
+    color: #4a7a5a;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-top: 2px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* 空・ローディング */
+  .empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #1a1a1a;
+    font-size: 15px;
+  }
+  .loading {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #1a1a1a;
+    font-size: 15px;
+  }
+
+  @media (max-width: 400px) {
+    .book-title { font-size: 15px; }
+    .select-row { flex-direction: column; }
+    select { min-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-title">📚 楠小　読み聞かせ記録</div>
+  <div class="app-sub">クラスを選ぶとこれまでに読んだ本が確認できます✨</div>
+</div>
+<div class="sync-bar">
+  <div class="sync-left">
+    <span class="sync-dot"></span>Googleフォームと自動連携中
+  </div>
+  <div class="sync-right" id="lastUpdate">読み込み中...</div>
+</div>
+
+<div class="body">
+  <div class="filter-area">
+    <div class="filter-label">検索する</div>
+    <div class="select-row">
+      <select id="classSelect" onchange="filter()">
+        <option value="">すべてのクラス</option>
+      </select>
+      <select id="periodSelect" onchange="filter()">
+        <option value="">すべての期間</option>
+        <option value="2025">2025年度</option>
+        <option value="2026">2026年度</option>
+      </select>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchBox" placeholder="タイトル・作者・担当者で検索..." oninput="filter()">
+    </div>
+  </div>
+
+  <div class="count-label" id="countLabel"></div>
+  <div class="book-list" id="bookList">
+    <div class="loading">📖 データを読み込んでいます...</div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ★ここを自分のApps ScriptのURLに書き換えてください★
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3XAC3dRI_nEFsATJXBamB5-2fQdxRR05J-wYTEt8fguUE51dOl5HvRwYM2jmQE0em/exec";
+// ============================================================
+
+let allEntries = [];
+
+// クラス名を正規化（合同クラスは両方に表示）
+function normalizeClass(raw) {
+  let s = raw.trim()
+    .replace(/（合同予定でしたがうっかりしてました.*?）/g, '')
+    .replace(/（合同）|合同クラス/g, '')
+    .trim();
+  const parts = [];
+  for (let t of s.split(/[、,，・\s]+/).map(x => x.trim()).filter(Boolean)) {
+    if (/^ひまわり/.test(t)) {
+      parts.push('ひまわり');
+    } else {
+      let m = t.match(/^(\d+)[のー\-ー](\d+)/);
+      if (m) { parts.push(m[1] + '-' + m[2]); continue; }
+      let m2 = t.match(/^(\d+)年?(\d+)組?$/);
+      if (m2) { parts.push(m2[1] + '-' + m2[2]); continue; }
+      const kj = {一:'1',二:'2',三:'3',四:'4',五:'5',六:'6'};
+      let m3 = t.match(/^([一二三四五六])年?(\d+)組?$/);
+      if (m3) { parts.push(kj[m3[1]] + '-' + m3[2]); continue; }
+      let m4 = t.match(/^(\d+)年合同$/);
+      if (m4) { for (let i = 1; i <= 3; i++) parts.push(m4[1] + '-合同'); continue; }
+      parts.push(t);
+    }
+  }
+  return [...new Set(parts)];
+}
+
+// データ取得
+async function loadData() {
+  try {
+    const res = await fetch(SCRIPT_URL);
+    const raw = await res.json();
+
+    allEntries = [];
+    for (const r of raw) {
+      const classes = normalizeClass(r.classRaw);
+      for (const b of r.books) {
+        for (const cl of classes) {
+          allEntries.push({
+            date: r.date,
+            person: r.person,
+            classKey: cl,
+            title: b.title,
+            author: b.author,
+            kanso: b.kanso
+          });
+        }
+      }
+    }
+
+    // クラス選択肢を生成
+    const allClasses = [...new Set(allEntries.map(e => e.classKey))].sort((a, b) => {
+      if (a.startsWith('ひまわり')) return -1;
+      if (b.startsWith('ひまわり')) return 1;
+      const ma = a.match(/^(\d+)-(\d+)/), mb = b.match(/^(\d+)-(\d+)/);
+      if (ma && mb) { const d = parseInt(ma[1]) - parseInt(mb[1]); return d || parseInt(ma[2]) - parseInt(mb[2]); }
+      return a.localeCompare(b, 'ja');
+    });
+    const sel = document.getElementById('classSelect');
+    for (const c of allClasses) {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      sel.appendChild(o);
+    }
+
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent =
+      `最終更新 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    filter();
+  } catch (e) {
+    document.getElementById('bookList').innerHTML =
+      '<div class="empty">⚠️ データの読み込みに失敗しました。<br>しばらくしてから再度お試しください。</div>';
+  }
+}
+
+// 新しい本かどうか（30日以内）
+function isNew(dateStr) {
+  const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (!m) return false;
+  const d = new Date(m[1], m[2]-1, m[3]);
+  return (Date.now() - d.getTime()) < 30 * 24 * 60 * 60 * 1000;
+}
+
+function filter() {
+  const cls = document.getElementById('classSelect').value;
+  const period = document.getElementById('periodSelect').value;
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+
+  let filtered = allEntries.filter(e => {
+    if (cls && e.classKey !== cls) return false;
+    if (period && !e.date.startsWith(period)) return false;
+    if (q && !(e.title.toLowerCase().includes(q) ||
+               e.author.toLowerCase().includes(q) ||
+               e.person.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a, b) => b.date.localeCompare(a.date, 'ja'));
+
+  // 重複除去
+  const seen = new Set(), deduped = [];
+  for (const e of filtered) {
+    const k = e.classKey + '|' + e.title + '|' + e.date + '|' + e.person;
+    if (!seen.has(k)) { seen.add(k); deduped.push(e); }
+  }
+
+  document.getElementById('countLabel').textContent = deduped.length + '件の記録';
+  render(deduped);
+}
+
+function render(list) {
+  const c = document.getElementById('bookList');
+  if (!list.length) {
+    c.innerHTML = '<div class="empty">該当する記録がありません</div>';
+    return;
+  }
+  c.innerHTML = list.map((e, i) => `
+    <div class="book-card${isNew(e.date) ? ' is-new' : ''}">
+      <div class="card-top">
+        <span class="num-badge">${i + 1}</span>
+        <div style="flex:1;min-width:0">
+          <div class="book-title">${e.title}${isNew(e.date) ? '<span class="new-badge">NEW</span>' : ''}</div>
+          ${e.author ? `<div class="book-author">${e.author}</div>` : ''}
+        </div>
+      </div>
+      <div class="tags">
+        <span class="tag tag-date">📅 ${e.date}</span>
+        <span class="tag tag-class">🏫 ${e.classKey}</span>
+        <span class="tag tag-person">👤 ${e.person}</span>
+      </div>
+      ${e.kanso ? `
+        <div class="kanso" id="k${i}">${e.kanso}</div>
+        <button class="more-btn" onclick="toggle(${i})">もっと見る</button>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function toggle(i) {
+  const el = document.getElementById('k' + i);
+  const btn = el.nextElementSibling;
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '閉じる' : 'もっと見る';
+}
+
+loadData();
+</script>
+</body>
+</html>
