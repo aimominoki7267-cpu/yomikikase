@@ -14,7 +14,6 @@
     min-height: 100vh;
   }
 
-  /* ヘッダー */
   .app-header {
     background: #4a7a5a;
     padding: 18px 20px 14px;
@@ -30,7 +29,6 @@
     color: rgba(255,255,255,0.88);
   }
 
-  /* 自動連携バー */
   .sync-bar {
     background: #3d6b4d;
     padding: 6px 20px;
@@ -59,14 +57,12 @@
     color: rgba(255,255,255,0.75);
   }
 
-  /* 本体 */
   .body {
     max-width: 600px;
     margin: 0 auto;
     padding: 16px 14px 40px;
   }
 
-  /* 検索エリア */
   .filter-area {
     background: #fff;
     border-radius: 12px;
@@ -93,9 +89,10 @@
     border: 1px solid #d8d4cc;
     border-radius: 8px;
     padding: 8px 10px;
-    font-size: 14px;
+    font-size: 16px;
     color: #1a1a1a;
     appearance: none;
+    -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
@@ -108,9 +105,8 @@
     border: 1px solid #d8d4cc;
     border-radius: 8px;
     padding: 8px 12px 8px 36px;
-    font-size: 14px;
+    font-size: 16px;
     color: #1a1a1a;
-    position: relative;
   }
   .search-wrap {
     position: relative;
@@ -124,14 +120,12 @@
     pointer-events: none;
   }
 
-  /* 件数 */
   .count-label {
     font-size: 13px;
     color: #1a1a1a;
     margin-bottom: 12px;
   }
 
-  /* カード */
   .book-list {
     display: flex;
     flex-direction: column;
@@ -201,7 +195,6 @@
   .tag-class  { background: #e6f0e8; }
   .tag-person { background: #eef2fb; }
 
-  /* 感想 */
   .kanso {
     font-size: 13px;
     color: #1a1a1a;
@@ -229,24 +222,20 @@
     text-underline-offset: 2px;
   }
 
-  /* 空・ローディング */
-  .empty {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #1a1a1a;
-    font-size: 15px;
-  }
-  .loading {
+  .empty, .loading {
     text-align: center;
     padding: 3rem 1rem;
     color: #1a1a1a;
     font-size: 15px;
   }
 
-  @media (max-width: 400px) {
-    .book-title { font-size: 15px; }
+  @media (max-width: 480px) {
+    .app-title { font-size: 17px; }
     .select-row { flex-direction: column; }
-    select { min-width: unset; }
+    select { min-width: unset; width: 100%; }
+    .body { padding: 12px 10px 40px; }
+    .filter-area { padding: 12px; }
+    .book-card { padding: 12px; }
   }
 </style>
 </head>
@@ -289,40 +278,82 @@
 </div>
 
 <script>
-// ============================================================
-// ★ここを自分のApps ScriptのURLに書き換えてください★
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3XAC3dRI_nEFsATJXBamB5-2fQdxRR05J-wYTEt8fguUE51dOl5HvRwYM2jmQE0em/exec";
-// ============================================================
 
 let allEntries = [];
 
-// クラス名を正規化（合同クラスは両方に表示）
+// 漢数字→算用数字
+const KJ = {一:'1',二:'2',三:'3',四:'4',五:'5',六:'6'};
+
+// クラス名を「1-1」形式に正規化、合同は「1-1（合同）」
 function normalizeClass(raw) {
+  // 前処理：余分な文言を除去
   let s = raw.trim()
     .replace(/（合同予定でしたがうっかりしてました.*?）/g, '')
-    .replace(/（合同）|合同クラス/g, '')
+    .replace(/\(合同予定でしたがうっかりしてました.*?\)/g, '')
     .trim();
+
+  // 合同かどうか判定
+  const isJoint = /合同|・.*組|、.*組|,.*組/.test(s) || s.split(/[、,，・]/).length > 1;
+
+  // トークンに分割
+  const tokens = s
+    .replace(/合同クラス|合同/g, '')
+    .split(/[、,，・\s　]+/)
+    .map(t => t.trim())
+    .filter(Boolean);
+
   const parts = [];
-  for (let t of s.split(/[、,，・\s]+/).map(x => x.trim()).filter(Boolean)) {
+
+  for (const t of tokens) {
+    if (!t) continue;
+
+    // ひまわり系
     if (/^ひまわり/.test(t)) {
-      parts.push('ひまわり');
-    } else {
-      let m = t.match(/^(\d+)[のー\-ー](\d+)/);
-      if (m) { parts.push(m[1] + '-' + m[2]); continue; }
-      let m2 = t.match(/^(\d+)年?(\d+)組?$/);
-      if (m2) { parts.push(m2[1] + '-' + m2[2]); continue; }
-      const kj = {一:'1',二:'2',三:'3',四:'4',五:'5',六:'6'};
-      let m3 = t.match(/^([一二三四五六])年?(\d+)組?$/);
-      if (m3) { parts.push(kj[m3[1]] + '-' + m3[2]); continue; }
-      let m4 = t.match(/^(\d+)年合同$/);
-      if (m4) { for (let i = 1; i <= 3; i++) parts.push(m4[1] + '-合同'); continue; }
-      parts.push(t);
+      parts.push({ key: 'ひまわり', joint: isJoint });
+      continue;
+    }
+
+    // 「5の1」「5-1」「5ー1」形式
+    let m = t.match(/^(\d+)[のー\-ー](\d+)/);
+    if (m) { parts.push({ key: m[1]+'-'+m[2], joint: isJoint }); continue; }
+
+    // 「5年1組」「5年1」形式
+    let m2 = t.match(/^(\d+)年?(\d+)組?$/);
+    if (m2) { parts.push({ key: m2[1]+'-'+m2[2], joint: isJoint }); continue; }
+
+    // 「一年二組」漢数字形式
+    let m3 = t.match(/^([一二三四五六])年?([一二三四五六\d]+)組?$/);
+    if (m3) {
+      const g = KJ[m3[1]] || m3[1];
+      const cl = KJ[m3[2]] || m3[2];
+      parts.push({ key: g+'-'+cl, joint: isJoint }); continue;
+    }
+
+    // 「2年生合同」「1年合同」→ その学年の1〜3組全部
+    let m4 = t.match(/^(\d+)年生?合同?$/);
+    if (m4) {
+      const gr = m4[1];
+      for (let i = 1; i <= 3; i++) parts.push({ key: gr+'-'+i, joint: true });
+      continue;
+    }
+
+    // 「1年合同」パターン（上で取れなかった場合）
+    let m5 = t.match(/^([一二三四五六\d]+)年/);
+    if (m5) {
+      const gr = KJ[m5[1]] || m5[1];
+      for (let i = 1; i <= 3; i++) parts.push({ key: gr+'-'+i, joint: true });
+      continue;
     }
   }
-  return [...new Set(parts)];
+
+  // 重複除去してキー文字列を返す
+  const seen = new Set();
+  return parts
+    .filter(p => { if (seen.has(p.key)) return false; seen.add(p.key); return true; })
+    .map(p => p.joint && parts.length > 1 ? p.key+'（合同）' : p.key);
 }
 
-// データ取得
 async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL);
@@ -345,14 +376,16 @@ async function loadData() {
       }
     }
 
-    // クラス選択肢を生成
+    // クラス選択肢を生成（合同なしのベースキーでソート）
     const allClasses = [...new Set(allEntries.map(e => e.classKey))].sort((a, b) => {
-      if (a.startsWith('ひまわり')) return -1;
-      if (b.startsWith('ひまわり')) return 1;
-      const ma = a.match(/^(\d+)-(\d+)/), mb = b.match(/^(\d+)-(\d+)/);
-      if (ma && mb) { const d = parseInt(ma[1]) - parseInt(mb[1]); return d || parseInt(ma[2]) - parseInt(mb[2]); }
-      return a.localeCompare(b, 'ja');
+      const baseA = a.replace('（合同）',''), baseB = b.replace('（合同）','');
+      if (baseA.startsWith('ひまわり')) return -1;
+      if (baseB.startsWith('ひまわり')) return 1;
+      const ma = baseA.match(/^(\d+)-(\d+)/), mb = baseB.match(/^(\d+)-(\d+)/);
+      if (ma && mb) { const d = parseInt(ma[1])-parseInt(mb[1]); return d || parseInt(ma[2])-parseInt(mb[2]); }
+      return baseA.localeCompare(baseB, 'ja');
     });
+
     const sel = document.getElementById('classSelect');
     for (const c of allClasses) {
       const o = document.createElement('option');
@@ -371,7 +404,6 @@ async function loadData() {
   }
 }
 
-// 新しい本かどうか（30日以内）
 function isNew(dateStr) {
   const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
   if (!m) return false;
@@ -393,10 +425,9 @@ function filter() {
     return true;
   }).sort((a, b) => b.date.localeCompare(a.date, 'ja'));
 
-  // 重複除去
   const seen = new Set(), deduped = [];
   for (const e of filtered) {
-    const k = e.classKey + '|' + e.title + '|' + e.date + '|' + e.person;
+    const k = e.classKey+'|'+e.title+'|'+e.date+'|'+e.person;
     if (!seen.has(k)) { seen.add(k); deduped.push(e); }
   }
 
@@ -413,7 +444,7 @@ function render(list) {
   c.innerHTML = list.map((e, i) => `
     <div class="book-card${isNew(e.date) ? ' is-new' : ''}">
       <div class="card-top">
-        <span class="num-badge">${i + 1}</span>
+        <span class="num-badge">${i+1}</span>
         <div style="flex:1;min-width:0">
           <div class="book-title">${e.title}${isNew(e.date) ? '<span class="new-badge">NEW</span>' : ''}</div>
           ${e.author ? `<div class="book-author">${e.author}</div>` : ''}
@@ -433,7 +464,7 @@ function render(list) {
 }
 
 function toggle(i) {
-  const el = document.getElementById('k' + i);
+  const el = document.getElementById('k'+i);
   const btn = el.nextElementSibling;
   el.classList.toggle('open');
   btn.textContent = el.classList.contains('open') ? '閉じる' : 'もっと見る';
