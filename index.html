@@ -12,84 +12,46 @@
     color: #1a1a1a;
     min-height: 100vh;
   }
-  .app-header {
-    background: #4a7a5a;
-    padding: 18px 20px 14px;
-  }
+  .app-header { background: #4a7a5a; padding: 18px 20px 14px; }
   .app-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
   .app-sub { font-size: 13px; color: rgba(255,255,255,0.88); }
   .sync-bar {
-    background: #3d6b4d;
-    padding: 6px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 4px;
+    background: #3d6b4d; padding: 6px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 4px;
   }
   .sync-left { font-size: 11px; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 6px; }
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #7dd4a0; flex-shrink: 0; }
   .sync-right { font-size: 11px; color: rgba(255,255,255,0.75); }
   .body { max-width: 600px; margin: 0 auto; padding: 16px 14px 40px; }
   .filter-area {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    border: 1px solid #e8e4db;
+    background: #fff; border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 14px; border: 1px solid #e8e4db;
   }
   .filter-label { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
   .select-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
   select {
-    flex: 1;
-    min-width: 130px;
-    background: #f7f5f0;
-    border: 1px solid #d8d4cc;
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 16px;
-    color: #1a1a1a;
-    appearance: none;
-    -webkit-appearance: none;
+    flex: 1; min-width: 130px; background: #f7f5f0;
+    border: 1px solid #d8d4cc; border-radius: 8px;
+    padding: 8px 10px; font-size: 16px; color: #1a1a1a;
+    appearance: none; -webkit-appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    padding-right: 30px;
-    cursor: pointer;
+    background-repeat: no-repeat; background-position: right 10px center;
+    padding-right: 30px; cursor: pointer;
   }
   .search-wrap { position: relative; }
-  .search-icon {
-    position: absolute; left: 11px; top: 50%;
-    transform: translateY(-50%); font-size: 15px; pointer-events: none;
-  }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
   input[type="text"] {
-    width: 100%;
-    background: #f7f5f0;
-    border: 1px solid #d8d4cc;
-    border-radius: 8px;
-    padding: 8px 12px 8px 36px;
-    font-size: 16px;
-    color: #1a1a1a;
+    width: 100%; background: #f7f5f0; border: 1px solid #d8d4cc;
+    border-radius: 8px; padding: 8px 12px 8px 36px; font-size: 16px; color: #1a1a1a;
   }
   .count-label { font-size: 13px; color: #1a1a1a; margin-bottom: 12px; }
   .book-list { display: flex; flex-direction: column; gap: 10px; }
-
-  /* カード */
-  .book-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px 16px;
-    border: 1px solid #e8e4db;
-  }
+  .book-card { background: #fff; border-radius: 12px; padding: 14px 16px; border: 1px solid #e8e4db; }
   .book-card.is-new { border-color: #b8d9c4; border-width: 1.5px; }
   .card-head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0ede6;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #f0ede6;
   }
   .tag { font-size: 12px; padding: 3px 10px; border-radius: 999px; color: #1a1a1a; }
   .tag-date   { background: #f5f4f0; }
@@ -97,59 +59,34 @@
   .tag-person { background: #eef2fb; }
   .tag-joint  { background: #fef3e2; border: 1px solid #f5d9a0; }
   .tag-new    { background: #d4eddc; font-weight: 700; }
-
-  /* 本の行 */
+  .tag-count  { background: #f0ede6; color: #555; }
   .book-row {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding: 8px 0;
-    border-bottom: 1px solid #f7f5f0;
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid #f7f5f0;
   }
   .book-row:last-child { border-bottom: none; padding-bottom: 0; }
   .book-num {
-    font-size: 11px;
-    font-weight: 700;
-    color: #4a7a5a;
-    background: #e6f0e8;
-    padding: 2px 7px;
-    border-radius: 999px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    margin-top: 3px;
+    font-size: 11px; font-weight: 700; color: #4a7a5a; background: #e6f0e8;
+    padding: 2px 7px; border-radius: 999px; white-space: nowrap;
+    flex-shrink: 0; margin-top: 3px;
   }
   .book-info { flex: 1; min-width: 0; }
   .book-title { font-size: 15px; font-weight: 700; color: #1a1a1a; line-height: 1.4; }
   .book-author { font-size: 12px; color: #1a1a1a; margin-top: 2px; }
   .kanso {
-    font-size: 12px;
-    color: #1a1a1a;
-    line-height: 1.7;
-    margin-top: 6px;
-    padding-left: 8px;
-    border-left: 2px solid #ddd;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    font-size: 12px; color: #1a1a1a; line-height: 1.7; margin-top: 6px;
+    padding-left: 8px; border-left: 2px solid #ddd;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .kanso.open { -webkit-line-clamp: unset; }
   .more-btn {
-    font-size: 11px;
-    color: #4a7a5a;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 3px 0;
-    margin-top: 2px;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    font-size: 11px; color: #4a7a5a; background: none; border: none;
+    cursor: pointer; padding: 3px 0; margin-top: 2px;
+    text-decoration: underline; text-underline-offset: 2px;
   }
   .empty, .loading {
-    text-align: center; padding: 3rem 1rem;
-    color: #1a1a1a; font-size: 15px;
+    text-align: center; padding: 3rem 1rem; color: #1a1a1a; font-size: 15px; line-height: 1.7;
   }
-
   @media (max-width: 480px) {
     .app-title { font-size: 17px; }
     .select-row { flex-direction: column; }
@@ -203,19 +140,36 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3XAC3dRI_nEFsATJXB
 
 const KJ = {一:'1',二:'2',三:'3',四:'4',五:'5',六:'6'};
 
+// HTMLエスケープ（XSS対策・顔文字の<>崩れ防止）
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// 全角数字→半角
+function toHalf(s) {
+  return String(s).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+}
+
 // クラス名を正規化。{key, joint} の配列を返す
 function normalizeClass(raw) {
-  let s = raw.trim()
-    .replace(/（合同予定でしたがうっかりしてました.*?）/g, '')
-    .replace(/\(合同予定でしたがうっかりしてました.*?\)/g, '')
+  let s = toHalf(String(raw || '').trim())
+    .replace(/[（(]合同予定でしたがうっかりしてました.*?[）)]/g, '')
     .trim();
-
-  const isJoint = /合同|・.*[組級]|、.*[組級]|,.*[組級]/.test(s) || s.split(/[、,，・]/).filter(Boolean).length > 1;
 
   const tokens = s
     .replace(/合同クラス|合同/g, '')
-    .split(/[、,，・\s　]+/)
+    .split(/[、,，・.\s　]+/)
     .map(t => t.trim()).filter(Boolean);
+
+  // 合同判定：「合同」の語がある／クラスらしいトークンが2つ以上／ひまわりが複数
+  const numberTokens = tokens.filter(t => /^(\d+[のー\-ー]\d+|[一二三四五六\d]+年|\d+年?\d+組?)/.test(t)).length;
+  const himawariMulti = /ひまわり[\d][・,，\s]*[\d]/.test(toHalf(s));
+  const isJoint = /合同/.test(s) || numberTokens >= 2 || himawariMulti;
 
   const parts = [];
   for (const t of tokens) {
@@ -227,7 +181,7 @@ function normalizeClass(raw) {
     if (m2) { parts.push({ key: m2[1]+'-'+m2[2], joint: isJoint }); continue; }
     let m3 = t.match(/^([一二三四五六])年?([一二三四五六\d]+)組?$/);
     if (m3) { parts.push({ key: (KJ[m3[1]]||m3[1])+'-'+(KJ[m3[2]]||m3[2]), joint: isJoint }); continue; }
-    let m4 = t.match(/^(\d+)年生?合同?$/);
+    let m4 = t.match(/^(\d+)年生?$/);
     if (m4) { for (let i=1;i<=3;i++) parts.push({ key: m4[1]+'-'+i, joint: true }); continue; }
     let m5 = t.match(/^([一二三四五六\d]+)年/);
     if (m5) { const gr=KJ[m5[1]]||m5[1]; for (let i=1;i<=3;i++) parts.push({ key: gr+'-'+i, joint: true }); continue; }
@@ -247,9 +201,23 @@ function normalizeDate(s) {
   }
   s = s.replace(/R(\d+)/i, (m,y) => (2018+parseInt(y))+'年');
   s = s.replace(/(\d{4})[.\/\-](\d{1,2})[.\/\-](\d{1,2})/, (m,y,mo,d) => `${y}年${parseInt(mo)}月${parseInt(d)}日`);
+  const full = s.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (full) return `${full[1]}年${parseInt(full[2])}月${parseInt(full[3])}日`;
   s = s.replace(/^(\d{1,2})月(\d{1,2})日/, (m,mo,d) => `${parseInt(mo)>=4?2025:2026}年${parseInt(mo)}月${parseInt(d)}日`);
-  s = s.replace(/[（(][^）)]*[）)]/g,'').trim();
-  return s;
+  return s.replace(/[（(][^）)]*[）)]/g,'').trim();
+}
+
+// 日付を比較用の数値キーに（YYYYMMDD）
+function dateKey(dateStr) {
+  const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (!m) return 0;
+  return parseInt(m[1])*10000 + parseInt(m[2])*100 + parseInt(m[3]);
+}
+
+// 年月キー（"2025年9月"）
+function ymKey(dateStr) {
+  const m = dateStr.match(/(\d{4})年(\d{1,2})月/);
+  return m ? `${m[1]}年${parseInt(m[2])}月` : null;
 }
 
 function isNew(dateStr) {
@@ -258,15 +226,20 @@ function isNew(dateStr) {
   return (Date.now() - new Date(m[1], m[2]-1, m[3]).getTime()) < 30*24*60*60*1000;
 }
 
-// グループ: date + classKey + person でまとめる
+// 検索用：空白・記号を除いて小文字化
+function normForSearch(s) {
+  return String(s || '').toLowerCase().replace(/[\s　・,，、.。]/g, '');
+}
+
 let allGroups = [];
+let dataLoaded = false;
 
 async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const raw = await res.json();
 
-    // date+class+person でまとめたマップ
     const map = new Map();
 
     for (const r of raw) {
@@ -275,15 +248,23 @@ async function loadData() {
       for (const cp of classParts) {
         const key = date + '|' + cp.key + '|' + r.person;
         if (!map.has(key)) {
-          map.set(key, { date, classKey: cp.key, joint: cp.joint, person: r.person, books: [] });
+          map.set(key, { date, classKey: cp.key, joint: cp.joint, person: r.person, books: [], _seen: new Set() });
         }
+        const group = map.get(key);
         for (const b of r.books) {
-          if (b.title) map.get(key).books.push(b);
+          if (!b.title) continue;
+          // 同じ本の重複を除去（タイトル+作者で判定）
+          const bk = b.title + '|' + (b.author||'');
+          if (group._seen.has(bk)) continue;
+          group._seen.add(bk);
+          group.books.push(b);
         }
       }
     }
 
-    allGroups = [...map.values()].sort((a,b) => b.date.localeCompare(a.date,'ja'));
+    allGroups = [...map.values()]
+      .map(g => { delete g._seen; return g; })
+      .sort((a,b) => dateKey(b.date) - dateKey(a.date));
 
     // クラス選択肢
     const allClasses = [...new Set(allGroups.map(g => g.classKey))].sort((a,b) => {
@@ -303,10 +284,12 @@ async function loadData() {
     document.getElementById('lastUpdate').textContent =
       `最終更新 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
 
+    dataLoaded = true;
     filter();
   } catch(e) {
+    document.getElementById('lastUpdate').textContent = '更新できませんでした';
     document.getElementById('bookList').innerHTML =
-      '<div class="empty">⚠️ データの読み込みに失敗しました。<br>しばらくしてから再度お試しください。</div>';
+      '<div class="empty">⚠️ データの読み込みに失敗しました。<br>通信環境を確認して、ページを再読み込みしてください。</div>';
   }
 }
 
@@ -314,15 +297,15 @@ function filter() {
   const cls = document.getElementById('classSelect').value;
   const period = document.getElementById('periodSelect').value;
   const month = document.getElementById('monthSelect').value;
-  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const q = normForSearch(document.getElementById('searchBox').value.trim());
 
   const filtered = allGroups.filter(g => {
     if (cls && g.classKey !== cls) return false;
-    if (period && !g.date.startsWith(period)) return false;
-    if (month && !g.date.startsWith(month)) return false;
+    if (period && !g.date.startsWith(period + '年')) return false;
+    if (month && ymKey(g.date) !== month) return false;
     if (q) {
-      const haystack = g.books.map(b=>b.title+' '+b.author).join(' ') + ' ' + g.person;
-      if (!haystack.toLowerCase().includes(q)) return false;
+      const haystack = normForSearch(g.books.map(b=>b.title+b.author).join('') + g.person);
+      if (!haystack.includes(q)) return false;
     }
     return true;
   });
@@ -333,7 +316,13 @@ function filter() {
 
 function render(list) {
   const c = document.getElementById('bookList');
-  if (!list.length) { c.innerHTML = '<div class="empty">該当する記録がありません</div>'; return; }
+  if (!list.length) {
+    const msg = dataLoaded
+      ? '該当する記録がありません'
+      : 'まだ記録がありません';
+    c.innerHTML = '<div class="empty">' + msg + '</div>';
+    return;
+  }
 
   c.innerHTML = list.map((g, gi) => {
     const newFlag = isNew(g.date);
@@ -341,30 +330,39 @@ function render(list) {
       <div class="book-row">
         <span class="book-num">${bi+1}冊目</span>
         <div class="book-info">
-          <div class="book-title">${b.title}</div>
-          ${b.author ? `<div class="book-author">${b.author}</div>` : ''}
+          <div class="book-title">${esc(b.title)}</div>
+          ${b.author ? `<div class="book-author">${esc(b.author)}</div>` : ''}
           ${b.kanso ? `
-            <div class="kanso" id="k${gi}_${bi}">${b.kanso}</div>
-            <button class="more-btn" id="btn${gi}_${bi}" onclick="toggle('${gi}_${bi}')" style="display:none">もっと見る</button>
+            <div class="kanso" id="k${gi}_${bi}">${esc(b.kanso)}</div>
+            <button class="more-btn" onclick="toggle('${gi}_${bi}')" style="display:none">もっと見る</button>
           ` : ''}
         </div>
       </div>
     `).join('');
 
+    const countTag = g.books.length > 1 ? `<span class="tag tag-count">全${g.books.length}冊</span>` : '';
+
     return `
       <div class="book-card${newFlag?' is-new':''}">
         <div class="card-head">
-          <span class="tag tag-date">📅 ${g.date}</span>
-          <span class="tag tag-class">🏫 ${g.classKey}</span>
+          <span class="tag tag-date">📅 ${esc(g.date)}</span>
+          <span class="tag tag-class">🏫 ${esc(g.classKey)}</span>
           ${g.joint ? '<span class="tag tag-joint">🤝 合同</span>' : ''}
           ${newFlag ? '<span class="tag tag-new">NEW</span>' : ''}
-          <span class="tag tag-person">👤 ${g.person}</span>
+          ${countTag}
+          <span class="tag tag-person">👤 ${esc(g.person)}</span>
         </div>
         ${booksHtml}
       </div>
     `;
   }).join('');
-  setTimeout(checkClamp, 50);
+
+  // フォント読み込み完了後にclamp判定（ズレ防止）
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(checkClamp);
+  } else {
+    setTimeout(checkClamp, 100);
+  }
 }
 
 function onPeriodChange() {
@@ -373,16 +371,12 @@ function onPeriodChange() {
   monthSel.innerHTML = '<option value="">すべての月</option>';
 
   if (period) {
-    // その年度の月を抽出（4月〜翌3月）
     const startYear = parseInt(period);
     const months = [];
     for (let m = 4; m <= 12; m++) months.push({ year: startYear, month: m });
     for (let m = 1; m <= 3; m++) months.push({ year: startYear+1, month: m });
 
-    const existing = new Set(allGroups.map(g => {
-      const match = g.date.match(/(\d{4})年(\d{1,2})月/);
-      return match ? `${match[1]}年${match[2]}月` : null;
-    }).filter(Boolean));
+    const existing = new Set(allGroups.map(g => ymKey(g.date)).filter(Boolean));
 
     months.forEach(({ year, month }) => {
       const key = `${year}年${month}月`;
@@ -401,9 +395,9 @@ function onPeriodChange() {
 }
 
 function checkClamp() {
-  document.querySelectorAll(".kanso").forEach(el => {
+  document.querySelectorAll('.kanso').forEach(el => {
     const btn = el.nextElementSibling;
-    if (btn && el.scrollHeight > el.clientHeight + 2) btn.style.display = "inline";
+    if (btn && el.scrollHeight > el.clientHeight + 2) btn.style.display = 'inline';
   });
 }
 
