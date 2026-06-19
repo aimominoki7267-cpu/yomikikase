@@ -245,20 +245,25 @@ async function loadData() {
     for (const r of raw) {
       const classParts = normalizeClass(r.classRaw);
       const date = normalizeDate(r.date);
-      for (const cp of classParts) {
-        const key = date + '|' + cp.key + '|' + r.person;
-        if (!map.has(key)) {
-          map.set(key, { date, classKey: cp.key, joint: cp.joint, person: r.person, books: [], _seen: new Set() });
-        }
-        const group = map.get(key);
-        for (const b of r.books) {
-          if (!b.title) continue;
-          // 同じ本の重複を除去（タイトル+作者で判定）
-          const bk = b.title + '|' + (b.author||'');
-          if (group._seen.has(bk)) continue;
-          group._seen.add(bk);
-          group.books.push(b);
-        }
+      if (classParts.length === 0) continue;
+
+      // 合同かどうか（パーツのいずれかがjoint）
+      const isJoint = classParts.some(cp => cp.joint);
+      // このグループに属する全クラスキー
+      const classKeys = classParts.map(cp => cp.key);
+
+      // グループのキー：日付＋全クラス＋担当者（合同は1グループにまとまる）
+      const key = date + '|' + classKeys.join(',') + '|' + r.person;
+      if (!map.has(key)) {
+        map.set(key, { date, classKeys, joint: isJoint, person: r.person, books: [], _seen: new Set() });
+      }
+      const group = map.get(key);
+      for (const b of r.books) {
+        if (!b.title) continue;
+        const bk = b.title + '|' + (b.author||'');
+        if (group._seen.has(bk)) continue;
+        group._seen.add(bk);
+        group.books.push(b);
       }
     }
 
@@ -266,8 +271,10 @@ async function loadData() {
       .map(g => { delete g._seen; return g; })
       .sort((a,b) => dateKey(b.date) - dateKey(a.date));
 
-    // クラス選択肢
-    const allClasses = [...new Set(allGroups.map(g => g.classKey))].sort((a,b) => {
+    // クラス選択肢（全グループの全クラスキーを集める）
+    const classSet = new Set();
+    allGroups.forEach(g => g.classKeys.forEach(k => classSet.add(k)));
+    const allClasses = [...classSet].sort((a,b) => {
       if (a.startsWith('ひまわり')) return -1;
       if (b.startsWith('ひまわり')) return 1;
       const ma=a.match(/^(\d+)-(\d+)/), mb=b.match(/^(\d+)-(\d+)/);
@@ -300,7 +307,7 @@ function filter() {
   const q = normForSearch(document.getElementById('searchBox').value.trim());
 
   const filtered = allGroups.filter(g => {
-    if (cls && g.classKey !== cls) return false;
+    if (cls && !g.classKeys.includes(cls)) return false;
     if (period && !g.date.startsWith(period + '年')) return false;
     if (month && ymKey(g.date) !== month) return false;
     if (q) {
@@ -346,7 +353,7 @@ function render(list) {
       <div class="book-card${newFlag?' is-new':''}">
         <div class="card-head">
           <span class="tag tag-date">📅 ${esc(g.date)}</span>
-          <span class="tag tag-class">🏫 ${esc(g.classKey)}</span>
+          <span class="tag tag-class">🏫 ${esc(g.classKeys.join(', '))}</span>
           ${g.joint ? '<span class="tag tag-joint">🤝 合同</span>' : ''}
           ${newFlag ? '<span class="tag tag-new">NEW</span>' : ''}
           ${countTag}
