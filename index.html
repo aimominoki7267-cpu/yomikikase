@@ -31,7 +31,7 @@
   .filter-label { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
   .select-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
   select {
-    flex: 1; min-width: 130px; background: #f7f5f0;
+    flex: 1; min-width: 120px; background: #f7f5f0;
     border: 1px solid #d8d4cc; border-radius: 8px;
     padding: 8px 10px; font-size: 16px; color: #1a1a1a;
     appearance: none; -webkit-appearance: none;
@@ -45,7 +45,31 @@
     width: 100%; background: #f7f5f0; border: 1px solid #d8d4cc;
     border-radius: 8px; padding: 8px 12px 8px 36px; font-size: 16px; color: #1a1a1a;
   }
-  .count-label { font-size: 13px; color: #1a1a1a; margin-bottom: 12px; }
+
+  /* 表示モード切り替え */
+  .view-row { display: flex; gap: 8px; margin-top: 10px; }
+  .view-btn {
+    font-size: 13px; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid #d8d4cc; background: #f7f5f0; color: #1a1a1a;
+    cursor: pointer; font-weight: 500;
+    font-family: inherit;
+  }
+  .view-btn.active {
+    background: #e6f0e8; border-color: #9ecfb0; font-weight: 700;
+  }
+
+  /* 件数行 */
+  .count-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .count-label { font-size: 13px; color: #1a1a1a; }
+  .expand-btn {
+    font-size: 12px; color: #4a7a5a; background: none;
+    border: 1px solid #c9ddd0; border-radius: 999px;
+    padding: 4px 12px; cursor: pointer; font-family: inherit;
+  }
+
   .book-list { display: flex; flex-direction: column; gap: 10px; }
   .book-card { background: #fff; border-radius: 12px; padding: 14px 16px; border: 1px solid #e8e4db; }
   .book-card.is-new { border-color: #b8d9c4; border-width: 1.5px; }
@@ -83,7 +107,28 @@
     font-size: 11px; color: #4a7a5a; background: none; border: none;
     cursor: pointer; padding: 3px 0; margin-top: 2px;
     text-decoration: underline; text-underline-offset: 2px;
+    font-family: inherit;
   }
+
+  /* タイトルのみ表示 */
+  .title-list { background: #fff; border-radius: 12px; border: 1px solid #e8e4db; overflow: hidden; }
+  .title-row {
+    display: flex; gap: 10px; align-items: baseline;
+    padding: 10px 14px; border-bottom: 1px solid #f0ede6;
+  }
+  .title-row:last-child { border-bottom: none; }
+  .title-main { font-size: 14px; font-weight: 700; color: #1a1a1a; flex: 1; min-width: 0; line-height: 1.5; }
+  .title-meta { font-size: 11px; color: #666; white-space: nowrap; text-align: right; line-height: 1.6; }
+
+  mark { background: #ffe9a8; color: inherit; border-radius: 3px; padding: 0 1px; }
+
+  .load-more {
+    display: block; width: 100%; margin-top: 12px;
+    font-size: 14px; padding: 10px; border-radius: 10px;
+    border: 1px solid #c9ddd0; background: #fff; color: #4a7a5a;
+    cursor: pointer; font-weight: 700; font-family: inherit;
+  }
+
   .empty, .loading {
     text-align: center; padding: 3rem 1rem; color: #1a1a1a; font-size: 15px; line-height: 1.7;
   }
@@ -94,6 +139,20 @@
     .body { padding: 12px 10px 40px; }
     .filter-area { padding: 12px; }
     .book-card { padding: 12px; }
+    .title-row { flex-direction: column; gap: 2px; }
+    .title-meta { text-align: left; }
+  }
+
+  /* 印刷対応：検索まわりを消してカードだけきれいに */
+  @media print {
+    body { background: #fff; }
+    .sync-bar, .filter-area, .count-row .expand-btn, .more-btn, .load-more { display: none !important; }
+    .app-header { background: none; padding: 0 0 10px; }
+    .app-title { color: #1a1a1a; }
+    .app-sub { color: #555; }
+    .book-card, .title-list { border: 1px solid #ccc; break-inside: avoid; }
+    .kanso { -webkit-line-clamp: unset !important; display: block; }
+    .body { max-width: none; padding: 0; }
   }
 </style>
 </head>
@@ -115,10 +174,13 @@
       <select id="classSelect" onchange="filter()">
         <option value="">すべてのクラス</option>
       </select>
+      <select id="personSelect" onchange="filter()">
+        <option value="">すべての担当者</option>
+      </select>
+    </div>
+    <div class="select-row">
       <select id="periodSelect" onchange="onPeriodChange()">
         <option value="">すべての期間</option>
-        <option value="2025">2025年度</option>
-        <option value="2026">2026年度</option>
       </select>
       <select id="monthSelect" onchange="filter()" style="display:none">
         <option value="">すべての月</option>
@@ -128,8 +190,15 @@
       <span class="search-icon">🔍</span>
       <input type="text" id="searchBox" placeholder="タイトル・作者・担当者で検索..." oninput="filter()">
     </div>
+    <div class="view-row">
+      <button class="view-btn active" id="viewCard" onclick="setView('card')">📖 くわしく</button>
+      <button class="view-btn" id="viewList" onclick="setView('list')">📋 タイトルのみ</button>
+    </div>
   </div>
-  <div class="count-label" id="countLabel"></div>
+  <div class="count-row">
+    <div class="count-label" id="countLabel"></div>
+    <button class="expand-btn" id="expandBtn" onclick="expandAll()" style="display:none">すべて開く</button>
+  </div>
   <div class="book-list" id="bookList">
     <div class="loading">📖 データを読み込んでいます...</div>
   </div>
@@ -137,10 +206,11 @@
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3XAC3dRI_nEFsATJXBamB5-2fQdxRR05J-wYTEt8fguUE51dOl5HvRwYM2jmQE0em/exec";
+const CACHE_KEY = "yomikikase_cache_v1";
+const PAGE_SIZE = 50;
 
 const KJ = {一:'1',二:'2',三:'3',四:'4',五:'5',六:'6'};
 
-// HTMLエスケープ（XSS対策・顔文字の<>崩れ防止）
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;')
@@ -150,12 +220,18 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-// 全角数字→半角
 function toHalf(s) {
   return String(s).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
 }
 
-// クラス名を正規化。{key, joint} の配列を返す
+// 担当者名の正規化（全角括弧→半角、空白除去）
+function normPerson(s) {
+  return toHalf(String(s || ''))
+    .replace(/（/g, '(').replace(/）/g, ')')
+    .replace(/[\s　]+/g, '')
+    .trim();
+}
+
 function normalizeClass(raw) {
   let s = toHalf(String(raw || '').trim())
     .replace(/[（(]合同予定でしたがうっかりしてました.*?[）)]/g, '')
@@ -166,7 +242,6 @@ function normalizeClass(raw) {
     .split(/[、,，・.\s　]+/)
     .map(t => t.trim()).filter(Boolean);
 
-  // 合同判定：「合同」の語がある／クラスらしいトークンが2つ以上／ひまわりが複数
   const numberTokens = tokens.filter(t => /^(\d+[のー\-ー]\d+|[一二三四五六\d]+年|\d+年?\d+組?)/.test(t)).length;
   const himawariMulti = /ひまわり[\d][・,，\s]*[\d]/.test(toHalf(s));
   const isJoint = /合同/.test(s) || numberTokens >= 2 || himawariMulti;
@@ -191,7 +266,6 @@ function normalizeClass(raw) {
   return parts.filter(p => { if(seen.has(p.key)) return false; seen.add(p.key); return true; });
 }
 
-// 日付を「2026年3月5日」形式に
 function normalizeDate(s) {
   if (!s) return '';
   s = String(s).trim();
@@ -207,17 +281,23 @@ function normalizeDate(s) {
   return s.replace(/[（(][^）)]*[）)]/g,'').trim();
 }
 
-// 日付を比較用の数値キーに（YYYYMMDD）
 function dateKey(dateStr) {
   const m = dateStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
   if (!m) return 0;
   return parseInt(m[1])*10000 + parseInt(m[2])*100 + parseInt(m[3]);
 }
 
-// 年月キー（"2025年9月"）
 function ymKey(dateStr) {
   const m = dateStr.match(/(\d{4})年(\d{1,2})月/);
   return m ? `${m[1]}年${parseInt(m[2])}月` : null;
+}
+
+// 年度（4月始まり）：2026年1月 → 2025年度
+function fiscalYear(dateStr) {
+  const m = dateStr.match(/(\d{4})年(\d{1,2})月/);
+  if (!m) return null;
+  const y = parseInt(m[1]), mo = parseInt(m[2]);
+  return mo >= 4 ? y : y - 1;
 }
 
 function isNew(dateStr) {
@@ -226,89 +306,191 @@ function isNew(dateStr) {
   return (Date.now() - new Date(m[1], m[2]-1, m[3]).getTime()) < 30*24*60*60*1000;
 }
 
-// 検索用：空白・記号を除いて小文字化
 function normForSearch(s) {
   return String(s || '').toLowerCase().replace(/[\s　・,，、.。]/g, '');
 }
 
+// 検索語ハイライト（エスケープ後のテキストに<mark>を差し込む）
+function hl(text, rawQuery) {
+  const escaped = esc(text);
+  if (!rawQuery) return escaped;
+  const eq = esc(rawQuery).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!eq) return escaped;
+  try {
+    return escaped.replace(new RegExp('(' + eq + ')', 'gi'), '<mark>$1</mark>');
+  } catch(e) {
+    return escaped;
+  }
+}
+
 let allGroups = [];
 let dataLoaded = false;
+let viewMode = 'card';
+let displayLimit = PAGE_SIZE;
+let lastFiltered = [];
+let allExpanded = false;
+
+function processRaw(raw) {
+  const map = new Map();
+
+  for (const r of raw) {
+    const classParts = normalizeClass(r.classRaw);
+    const date = normalizeDate(r.date);
+    if (classParts.length === 0) continue;
+
+    const isJoint = classParts.some(cp => cp.joint);
+    const classKeys = classParts.map(cp => cp.key);
+    const person = normPerson(r.person);
+
+    const key = date + '|' + classKeys.join(',') + '|' + person;
+    if (!map.has(key)) {
+      map.set(key, { date, classKeys, joint: isJoint, person, books: [], _seen: new Set() });
+    }
+    const group = map.get(key);
+    for (const b of r.books) {
+      if (!b.title) continue;
+      const bk = b.title + '|' + (b.author||'');
+      if (group._seen.has(bk)) continue;
+      group._seen.add(bk);
+      group.books.push(b);
+    }
+  }
+
+  allGroups = [...map.values()]
+    .map(g => { delete g._seen; return g; })
+    .sort((a,b) => dateKey(b.date) - dateKey(a.date));
+
+  buildSelectors();
+  dataLoaded = true;
+  filter();
+}
+
+function buildSelectors() {
+  // クラス選択肢（学年でグループ化）
+  const classSet = new Set();
+  allGroups.forEach(g => g.classKeys.forEach(k => classSet.add(k)));
+
+  const clsSel = document.getElementById('classSelect');
+  clsSel.innerHTML = '<option value="">すべてのクラス</option>';
+
+  // ひまわりを先に
+  if (classSet.has('ひまわり')) {
+    const o = document.createElement('option');
+    o.value = 'ひまわり'; o.textContent = 'ひまわり';
+    clsSel.appendChild(o);
+  }
+  // 学年ごとにoptgroup
+  for (let grade = 1; grade <= 6; grade++) {
+    const inGrade = [...classSet]
+      .filter(k => k.startsWith(grade + '-'))
+      .sort((a,b) => {
+        const na = parseInt(a.split('-')[1]) || 0;
+        const nb = parseInt(b.split('-')[1]) || 0;
+        return na - nb;
+      });
+    if (inGrade.length === 0) continue;
+    const og = document.createElement('optgroup');
+    og.label = grade + '年生';
+    for (const k of inGrade) {
+      const o = document.createElement('option');
+      o.value = k; o.textContent = k;
+      og.appendChild(o);
+    }
+    clsSel.appendChild(og);
+  }
+  // どのパターンにも当てはまらないクラス名があれば最後に
+  const others = [...classSet].filter(k => k !== 'ひまわり' && !/^\d+-/.test(k)).sort((a,b)=>a.localeCompare(b,'ja'));
+  for (const k of others) {
+    const o = document.createElement('option');
+    o.value = k; o.textContent = k;
+    clsSel.appendChild(o);
+  }
+
+  // 担当者選択肢（五十音順）
+  const personSel = document.getElementById('personSelect');
+  personSel.innerHTML = '<option value="">すべての担当者</option>';
+  const persons = [...new Set(allGroups.map(g => g.person))].sort((a,b)=>a.localeCompare(b,'ja'));
+  for (const p of persons) {
+    const o = document.createElement('option');
+    o.value = p; o.textContent = p;
+    personSel.appendChild(o);
+  }
+
+  // 年度選択肢（データから自動生成、新しい年度が上）
+  const periodSel = document.getElementById('periodSelect');
+  const prevPeriod = periodSel.value;
+  periodSel.innerHTML = '<option value="">すべての期間</option>';
+  const fys = [...new Set(allGroups.map(g => fiscalYear(g.date)).filter(y => y !== null))].sort((a,b)=>b-a);
+  for (const y of fys) {
+    const o = document.createElement('option');
+    o.value = String(y); o.textContent = y + '年度';
+    periodSel.appendChild(o);
+  }
+  if (prevPeriod && fys.includes(parseInt(prevPeriod))) periodSel.value = prevPeriod;
+}
 
 async function loadData() {
+  // キャッシュがあれば即表示（そのあと最新を取得して置き換え）
+  let hasCache = false;
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const obj = JSON.parse(cached);
+      if (obj && Array.isArray(obj.data)) {
+        processRaw(obj.data);
+        hasCache = true;
+        document.getElementById('lastUpdate').textContent = '最新データを確認中...';
+      }
+    }
+  } catch(e) { /* キャッシュ破損は無視 */ }
+
   try {
     const res = await fetch(SCRIPT_URL);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const raw = await res.json();
 
-    const map = new Map();
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: raw }));
+    } catch(e) { /* 容量オーバー等は無視 */ }
 
-    for (const r of raw) {
-      const classParts = normalizeClass(r.classRaw);
-      const date = normalizeDate(r.date);
-      if (classParts.length === 0) continue;
-
-      // 合同かどうか（パーツのいずれかがjoint）
-      const isJoint = classParts.some(cp => cp.joint);
-      // このグループに属する全クラスキー
-      const classKeys = classParts.map(cp => cp.key);
-
-      // グループのキー：日付＋全クラス＋担当者（合同は1グループにまとまる）
-      const key = date + '|' + classKeys.join(',') + '|' + r.person;
-      if (!map.has(key)) {
-        map.set(key, { date, classKeys, joint: isJoint, person: r.person, books: [], _seen: new Set() });
-      }
-      const group = map.get(key);
-      for (const b of r.books) {
-        if (!b.title) continue;
-        const bk = b.title + '|' + (b.author||'');
-        if (group._seen.has(bk)) continue;
-        group._seen.add(bk);
-        group.books.push(b);
-      }
-    }
-
-    allGroups = [...map.values()]
-      .map(g => { delete g._seen; return g; })
-      .sort((a,b) => dateKey(b.date) - dateKey(a.date));
-
-    // クラス選択肢（全グループの全クラスキーを集める）
-    const classSet = new Set();
-    allGroups.forEach(g => g.classKeys.forEach(k => classSet.add(k)));
-    const allClasses = [...classSet].sort((a,b) => {
-      if (a.startsWith('ひまわり')) return -1;
-      if (b.startsWith('ひまわり')) return 1;
-      const ma=a.match(/^(\d+)-(\d+)/), mb=b.match(/^(\d+)-(\d+)/);
-      if (ma&&mb) { const d=parseInt(ma[1])-parseInt(mb[1]); return d||parseInt(ma[2])-parseInt(mb[2]); }
-      return a.localeCompare(b,'ja');
-    });
-    const sel = document.getElementById('classSelect');
-    for (const c of allClasses) {
-      const o = document.createElement('option');
-      o.value = c; o.textContent = c; sel.appendChild(o);
-    }
+    processRaw(raw);
 
     const now = new Date();
     document.getElementById('lastUpdate').textContent =
       `最終更新 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    dataLoaded = true;
-    filter();
   } catch(e) {
-    document.getElementById('lastUpdate').textContent = '更新できませんでした';
-    document.getElementById('bookList').innerHTML =
-      '<div class="empty">⚠️ データの読み込みに失敗しました。<br>通信環境を確認して、ページを再読み込みしてください。</div>';
+    if (hasCache) {
+      document.getElementById('lastUpdate').textContent = 'オフライン表示（前回のデータ）';
+    } else {
+      document.getElementById('lastUpdate').textContent = '更新できませんでした';
+      document.getElementById('bookList').innerHTML =
+        '<div class="empty">⚠️ データの読み込みに失敗しました。<br>通信環境を確認して、ページを再読み込みしてください。</div>';
+    }
   }
 }
 
+function setView(mode) {
+  viewMode = mode;
+  document.getElementById('viewCard').classList.toggle('active', mode === 'card');
+  document.getElementById('viewList').classList.toggle('active', mode === 'list');
+  filter();
+}
+
 function filter() {
+  if (!dataLoaded) return;
+  displayLimit = PAGE_SIZE;
+  allExpanded = false;
+
   const cls = document.getElementById('classSelect').value;
+  const person = document.getElementById('personSelect').value;
   const period = document.getElementById('periodSelect').value;
   const month = document.getElementById('monthSelect').value;
   const q = normForSearch(document.getElementById('searchBox').value.trim());
 
-  const filtered = allGroups.filter(g => {
+  lastFiltered = allGroups.filter(g => {
     if (cls && !g.classKeys.includes(cls)) return false;
-    if (period && !g.date.startsWith(period + '年')) return false;
+    if (person && g.person !== person) return false;
+    if (period && fiscalYear(g.date) !== parseInt(period)) return false;
     if (month && ymKey(g.date) !== month) return false;
     if (q) {
       const haystack = normForSearch(g.books.map(b=>b.title+b.author).join('') + g.person);
@@ -317,31 +499,66 @@ function filter() {
     return true;
   });
 
-  document.getElementById('countLabel').textContent = filtered.length + '件の記録';
-  render(filtered);
+  const totalBooks = lastFiltered.reduce((sum, g) => sum + g.books.length, 0);
+  document.getElementById('countLabel').textContent =
+    lastFiltered.length + '件の記録（のべ' + totalBooks + '冊）';
+
+  render();
 }
 
-function render(list) {
+function render() {
   const c = document.getElementById('bookList');
-  if (!list.length) {
-    const msg = dataLoaded
-      ? '該当する記録がありません'
-      : 'まだ記録がありません';
+  const expandBtn = document.getElementById('expandBtn');
+  const rawQuery = document.getElementById('searchBox').value.trim();
+
+  if (!lastFiltered.length) {
+    const msg = allGroups.length === 0 ? 'まだ記録がありません' : '該当する記録がありません';
     c.innerHTML = '<div class="empty">' + msg + '</div>';
+    expandBtn.style.display = 'none';
     return;
   }
 
-  c.innerHTML = list.map((g, gi) => {
+  if (viewMode === 'list') {
+    expandBtn.style.display = 'none';
+    renderList(c, rawQuery);
+  } else {
+    expandBtn.style.display = '';
+    expandBtn.textContent = allExpanded ? 'すべて閉じる' : 'すべて開く';
+    renderCards(c, rawQuery);
+  }
+}
+
+// タイトルのみ表示：1冊1行のコンパクトなリスト
+function renderList(c, rawQuery) {
+  const rows = [];
+  for (const g of lastFiltered) {
+    for (const b of g.books) {
+      rows.push(`
+        <div class="title-row">
+          <div class="title-main">${hl(b.title, rawQuery)}</div>
+          <div class="title-meta">${esc(g.date)}<br>${esc(g.classKeys.join(', '))}・${hl(g.person, rawQuery)}</div>
+        </div>
+      `);
+    }
+  }
+  c.innerHTML = '<div class="title-list">' + rows.join('') + '</div>';
+}
+
+// くわしく表示：カード（ページネーション付き）
+function renderCards(c, rawQuery) {
+  const visible = lastFiltered.slice(0, displayLimit);
+
+  const cardsHtml = visible.map((g, gi) => {
     const newFlag = isNew(g.date);
     const booksHtml = g.books.map((b, bi) => `
       <div class="book-row">
         <span class="book-num">${bi+1}冊目</span>
         <div class="book-info">
-          <div class="book-title">${esc(b.title)}</div>
-          ${b.author ? `<div class="book-author">${esc(b.author)}</div>` : ''}
+          <div class="book-title">${hl(b.title, rawQuery)}</div>
+          ${b.author ? `<div class="book-author">${hl(b.author, rawQuery)}</div>` : ''}
           ${b.kanso ? `
-            <div class="kanso" id="k${gi}_${bi}">${esc(b.kanso)}</div>
-            <button class="more-btn" onclick="toggle('${gi}_${bi}')" style="display:none">もっと見る</button>
+            <div class="kanso${allExpanded ? ' open' : ''}" id="k${gi}_${bi}">${esc(b.kanso)}</div>
+            <button class="more-btn" onclick="toggle('${gi}_${bi}')" style="display:none">${allExpanded ? '閉じる' : 'もっと見る'}</button>
           ` : ''}
         </div>
       </div>
@@ -357,19 +574,63 @@ function render(list) {
           ${g.joint ? '<span class="tag tag-joint">🤝 合同</span>' : ''}
           ${newFlag ? '<span class="tag tag-new">NEW</span>' : ''}
           ${countTag}
-          <span class="tag tag-person">👤 ${esc(g.person)}</span>
+          <span class="tag tag-person">👤 ${hl(g.person, rawQuery)}</span>
         </div>
         ${booksHtml}
       </div>
     `;
   }).join('');
 
-  // フォント読み込み完了後にclamp判定（ズレ防止）
+  const remaining = lastFiltered.length - visible.length;
+  const loadMoreHtml = remaining > 0
+    ? `<button class="load-more" onclick="loadMore()">さらに表示（あと${remaining}件）</button>`
+    : '';
+
+  c.innerHTML = cardsHtml + loadMoreHtml;
+
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(checkClamp);
   } else {
     setTimeout(checkClamp, 100);
   }
+}
+
+function loadMore() {
+  displayLimit += PAGE_SIZE;
+  render();
+}
+
+function expandAll() {
+  allExpanded = !allExpanded;
+  document.getElementById('expandBtn').textContent = allExpanded ? 'すべて閉じる' : 'すべて開く';
+  document.querySelectorAll('.kanso').forEach(el => {
+    el.classList.toggle('open', allExpanded);
+  });
+  document.querySelectorAll('.more-btn').forEach(btn => {
+    if (btn.style.display !== 'none') {
+      btn.textContent = allExpanded ? '閉じる' : 'もっと見る';
+    }
+  });
+}
+
+function checkClamp() {
+  document.querySelectorAll('.kanso').forEach(el => {
+    const btn = el.nextElementSibling;
+    if (!btn) return;
+    if (el.classList.contains('open')) {
+      // 開いた状態で描画されたものは、閉じたら省略されるか判定できないので出しておく
+      btn.style.display = 'inline';
+    } else if (el.scrollHeight > el.clientHeight + 2) {
+      btn.style.display = 'inline';
+    }
+  });
+}
+
+function toggle(id) {
+  const el = document.getElementById('k'+id);
+  const btn = el.nextElementSibling;
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '閉じる' : 'もっと見る';
 }
 
 function onPeriodChange() {
@@ -399,20 +660,6 @@ function onPeriodChange() {
     monthSel.style.display = 'none';
   }
   filter();
-}
-
-function checkClamp() {
-  document.querySelectorAll('.kanso').forEach(el => {
-    const btn = el.nextElementSibling;
-    if (btn && el.scrollHeight > el.clientHeight + 2) btn.style.display = 'inline';
-  });
-}
-
-function toggle(id) {
-  const el = document.getElementById('k'+id);
-  const btn = el.nextElementSibling;
-  el.classList.toggle('open');
-  btn.textContent = el.classList.contains('open') ? '閉じる' : 'もっと見る';
 }
 
 loadData();
